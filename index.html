@@ -1,21 +1,183 @@
 <!DOCTYPE html>
+
 <html class="no-js">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
-        <meta name="description" content="">
+
+        <title>Charging Calculator :: Child Maintenance Options</title>
+
+        <meta name="description" content="Child Maintenance Options Charging Calculator">
+
         <meta name="viewport" content="width=device-width">
 
-        <link rel="stylesheet" href="css/normalize.min.css">
-        <link rel="stylesheet" href="css/main.css">
+        <meta name="robots" content="noindex">
 
-        <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+        <style>
+            body
+            {
+                padding-top: 20px;
+            }
+
+            .js .alert-danger
+            {
+                display: none;
+            }
+            
+            .no-js .form-horizontal
+            {
+                display: none;
+            }
+        </style>
+
+        <script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
+
     <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> JavaScript is required to use the Charging Calculator.
+                    </div>
 
-        <p>Hello world! This is HTML5 Boilerplate.</p>
+                    <form class="form-horizontal" role="form" id="charging-calculator">
+                        <fieldset>
+                            <legend>Maintenance Liability</legend>
 
-        <script src="js/main.js"></script>
+                            <div class="form-group">
+                                <label class="col-xs-12 col-md-4 control-label" for="weekly_maintenance_liability">Weekly Maintenance Liability</label>
+
+                                <div class="col-xs-12 col-md-8">
+                                    <input type="text" class="form-control" id="weekly_maintenance_liability" placeholder="0.00" required onkeyup="if ( isValidInput() ) { doChargingCalculation(); }">
+                                </div>
+
+                                <span class="col-xs-12 col-md-offset-4 col-md-8 help-block">Please enter the gross weekly maintenance liability.</span>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Actual Amounts</legend>
+
+                            <div class="form-group">
+                                <label class="col-xs-8 col-md-4 control-label">Collected from Paying Parent</label>
+
+                                <div class="col-xs-4 col-md-8">
+                                    <p class="form-control-static" id="actual_amount_collected">£ 0.00</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-8 col-md-4 control-label">Paid to Receiving Parent</label>
+
+                                <div class="col-xs-4 col-md-8">
+                                    <p class="form-control-static" id="actual_amount_paid">£ 0.00</p>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Breakdown of Charges</legend>
+
+                            <div class="col-xs-12 col-md-6">
+                                <h3 class="text-center">Paying Parent</h3>
+                                <h4 class="text-center">20 %</h4>
+
+                                <div class="form-group">
+                                    <label class="col-xs-8 col-md-6 control-label">Weekly Collection Charge</label>
+
+                                    <div class="col-xs-4 col-md-6">
+                                        <p class="form-control-static" id="weekly_amount_paying_parent">£ 0.00</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="col-xs-8 col-md-6 control-label">Annual Collection Charge</label>
+
+                                    <div class="col-xs-4 col-md-6">
+                                        <p class="form-control-static" id="annual_amount_paying_parent">£ 0.00</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-md-6">
+                                <h3 class="text-center">Receving Parent</h3>
+                                <h4 class="text-center">4 %</h4>
+
+                                <div class="form-group">
+                                    <label class="col-xs-8 col-md-6 control-label">Weekly Collection Charge</label>
+
+                                    <div class="col-xs-4 col-md-6">
+                                        <p class="form-control-static" id="weekly_amount_receiving_parent">£ 0.00</p>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-xs-8 col-md-6 control-label">Annual Collection Charge</label>
+
+                                    <div class="col-xs-4 col-md-6">
+                                        <p class="form-control-static" id="annual_amount_receiving_parent">£ 0.00</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                     </form>
+                 </div>
+            </div>
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+        <script src="js/bootstrap.min.js"></script>
+
+        <script src="js/big.min.js"></script>
+
+        <script type="text/javascript">
+            // <![CDATA[
+            function isValidInput()
+            {
+                var objRegExp = new RegExp( /^\d+(\.\d{2})?$/ );
+
+                if( objRegExp.test( $( '#weekly_maintenance_liability' ).val() ) ) {
+                    $( '#weekly_maintenance_liability' ).closest( '.form-group' ).removeClass( 'has-error' ).find( '.help-block' ).html( '' );
+
+                    return true;
+                } else {
+                    $( '#weekly_maintenance_liability' ).closest( '.form-group' ).addClass( 'has-error' ).find( '.help-block' ).html( 'Please enter the gross weekly maintenance liability.' );
+
+                    $( '#actual_amount_collected' ).html( '£ 0.00' );
+                    $( '#actual_amount_paid' ).html( '£ 0.00' );
+
+                    $( '#weekly_amount_paying_parent' ).html( '£ 0.00' );
+                    $( '#annual_amount_paying_parent' ).html( '£ 0.00' );
+
+                    $( '#weekly_amount_receiving_parent' ).html( '£ 0.00' );
+                    $( '#annual_amount_receiving_parent' ).html( '£ 0.00' );
+                }
+
+                return false;
+            }
+
+            function doChargingCalculation()
+            {
+                var COLLECTION_RATE_PAYING = new Number( 0.20 );
+                var COLLECTION_RATE_RECEIVING = new Number( 0.04 );
+
+                var liability_amount = new Big( $( '#weekly_maintenance_liability' ).val() );
+
+                $( '#actual_amount_collected' ).html( '£ ' + liability_amount.plus( liability_amount.div( 7 ).times( COLLECTION_RATE_PAYING ).times( 7 ) ).toFixed( 2 ) );
+                $( '#actual_amount_paid' ).html( '£ ' + liability_amount.minus( liability_amount.div( 7 ).times( COLLECTION_RATE_RECEIVING ).times( 7 ) ).toFixed( 2 ) );
+
+                $( '#weekly_amount_paying_parent' ).html( '£ ' + liability_amount.div( 7 ).times( COLLECTION_RATE_PAYING ).times( 7 ).toFixed( 2 ) );
+                $( '#annual_amount_paying_parent' ).html( '£ ' + liability_amount.div( 7 ).times( COLLECTION_RATE_PAYING ).times( 365 ).toFixed( 2 ) );
+
+                $( '#weekly_amount_receiving_parent' ).html( '£ ' + liability_amount.div( 7 ).times( COLLECTION_RATE_RECEIVING ).times( 7 ).toFixed( 2 ) );
+                $( '#annual_amount_receiving_parent' ).html( '£ ' +  liability_amount.div( 7 ).times( COLLECTION_RATE_RECEIVING ).times( 365 ).toFixed( 2 ) );
+            }
+            // ]]>
+        </script>
     </body>
 </html>
